@@ -1,0 +1,34 @@
+services:
+  api:
+    build: .
+    container_name: task-api
+    restart: unless-stopped
+    ports:
+      - "${APP_EXTERNAL_PORT}:${APP_INTERNAL_PORT}"
+    volumes:
+      - ./src:/usr/src/app/src
+    depends_on:
+      - db
+  db:
+    image: mysql:latest
+    container_name: task-db
+    restart: always
+    ports:
+      - "${DB_EXTERNAL_PORT}:${DB_INTERNAL_PORT}"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ADMIN_PASS}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+      - MYSQL_TCP_PORT=${DB_INTERNAL_PORT}
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: task-myadmin
+    restart: always
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: task-db
+      DB_ADMIN_PASS: ${DB_PASS}
+    ports:
+      - "${PHPMYADMIN_EXTERNAL_PORT}:${PHPMYADMIN_INTERNAL_PORT}"
