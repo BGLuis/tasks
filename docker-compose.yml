@@ -10,17 +10,14 @@ services:
     depends_on:
       - db
   db:
-    image: mysql:latest
+    image: mysql:5.7
     container_name: task-db
     restart: always
     ports:
       - "${DB_EXTERNAL_PORT}:${DB_INTERNAL_PORT}"
     environment:
-      - MYSQL_ROOT_PASSWORD=${DB_ADMIN_PASS}
-      - MYSQL_DATABASE=${DB_NAME}
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASS}
-      - MYSQL_TCP_PORT=${DB_INTERNAL_PORT}
+      MYSQL_ROOT_PASSWORD: ${DB_ADMIN_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: task-myadmin
@@ -28,7 +25,7 @@ services:
     depends_on:
       - db
     environment:
-      PMA_HOST: task-db
-      DB_ADMIN_PASS: ${DB_PASS}
+      PMA_HOST: db
+      DB_ADMIN_PASS: ${DB_ADMIN_PASS}
     ports:
       - "${PHPMYADMIN_EXTERNAL_PORT}:${PHPMYADMIN_INTERNAL_PORT}"
