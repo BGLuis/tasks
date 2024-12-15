@@ -1,0 +1,29 @@
+# Ignore node_modules
+node_modules
+
+# Ignore logs
+logs
+*.log
+npm-debug.log*
+
+# Ignore build output
+dist
+
+# Ignore local development files
+.vscode
+.DS_Store
+
+# Ignore dev configuration
+.eslintrc.js
+.prettierrc
+nest-cli.json
+
+# Ignore Docker file
+dockerfile
+docker-compose.yml
+.dockerignore
+
+# Ignore git files
+.git
+.gitignore
+README.md

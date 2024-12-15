@@ -1,20 +1,21 @@
-# Use a imagem oficial do Node.js como imagem base
-FROM node:lts
+FROM node:22-alpine AS desc
 
-# Defina o diretório de trabalho
-WORKDIR /usr/src/app
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
 
-# Copie package.json e package-lock.json
 COPY package*.json ./
+RUN npm ci
 
-# Instale as dependências
-RUN npm install
-
-# Copie o restante do código da aplicação
 COPY . .
 
-# Construa a aplicação NestJS
+FROM node:22-alpine AS build
+
+WORKDIR /app
+COPY --from=desc /app ./
 RUN npm run build
 
-# Inicie a aplicação NestJS
+FROM node:22-alpine AS runner
+
+WORKDIR /app
+COPY --from=build /app ./
 CMD ["npm", "run", "start:dev"]

@@ -6,7 +6,7 @@ export class AppConfigService {
 	constructor(private readonly config: ConfigService) {}
 
 	get LogLevel(): string {
-		console.log(this.config.get<string>('LOG_LEVEL'));
+		console.log(this.config.get<string>('API_LOG_LEVEL'));
 		return this.config.get<string>('LOG_LEVEL');
 	}
 
