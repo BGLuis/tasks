@@ -27,16 +27,21 @@ export class TaskController {
 
 	@Get(':id')
 	findOne(@Param('id') id: string) {
-		return this.taskService.findOne(+id);
+		return this.taskService.findOne(id);
+	}
+
+	@Patch(':id/checkd')
+	check(@Param('id') id: string) {
+		return this.taskService.checkd(id);
 	}
 
 	@Patch(':id')
 	update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-		return this.taskService.update(+id, updateTaskDto);
+		return this.taskService.update(id, updateTaskDto);
 	}
 
 	@Delete(':id')
 	remove(@Param('id') id: string) {
-		return this.taskService.remove(+id);
+		return this.taskService.remove(id);
 	}
 }

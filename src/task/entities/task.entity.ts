@@ -2,8 +2,8 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('tasks')
 export class Task {
-	@PrimaryGeneratedColumn()
-	id: number;
+	@PrimaryGeneratedColumn('uuid')
+	id: string;
 
 	@Column()
 	title: string;
@@ -14,9 +14,9 @@ export class Task {
 	@Column()
 	done: boolean;
 
-	@Column()
+	@Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
 	createAt: Date;
 
-	@Column()
+	@Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
 	updateAt: Date;
 }
