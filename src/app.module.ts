@@ -7,6 +7,9 @@ import { TaskModule } from './task/task.module';
 import { config } from './database/database-config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfigService } from './app-config/app-config.service';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { EncryptionModule } from './encryption/encryption.module';
 
 @Module({
 	imports: [
@@ -18,6 +21,9 @@ import { AppConfigService } from './app-config/app-config.service';
 			useFactory: config,
 		}),
 		TaskModule,
+		UserModule,
+		AuthModule,
+		EncryptionModule,
 	],
 	controllers: [AppController],
 	providers: [CustomLogger],
