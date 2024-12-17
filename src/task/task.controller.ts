@@ -6,12 +6,16 @@ import {
 	Patch,
 	Param,
 	Delete,
+	UseGuards,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { Roles } from 'src/auth/decorator/roles.decorator';
 
 @Controller('task')
+@UseGuards(JwtAuthGuard)
 export class TaskController {
 	constructor(private readonly taskService: TaskService) {}
 
@@ -19,7 +23,7 @@ export class TaskController {
 	create(@Body() createTaskDto: CreateTaskDto) {
 		return this.taskService.create(createTaskDto);
 	}
-
+	@Roles('user')
 	@Get()
 	findAll() {
 		return this.taskService.findAll();

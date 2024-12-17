@@ -5,38 +5,44 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
-import { Repository } from 'typeorm';
-import { scrypt as _scrypt } from 'crypto';
-import { promisify } from 'util';
+import { Like, Repository } from 'typeorm';
 import { Logger } from 'nestjs-pino';
 import { PasswordEncryption } from 'src/encryption/password-encryption.provider';
-
-const scrypt = promisify(_scrypt);
+import { Role } from 'src/user/entities/role.entity';
+import { Permission } from 'src/user/entities/permission.entity';
 
 @Injectable()
 export class AuthService {
 	constructor(
 		@InjectRepository(User)
-		private readonly repository: Repository<User>,
+		private readonly userRepository: Repository<User>,
+		@InjectRepository(Role)
+		private readonly RoleRepository: Repository<Role>,
+		@InjectRepository(Permission)
+		private readonly PermitionRepository: Repository<Permission>,
 		private readonly passwordEncryption: PasswordEncryption,
 		private readonly logger: Logger,
 	) {}
 
 	async signUp(email: string, password: string) {
-		const userExist = await this.repository.findOneBy({ email });
+		const userExist = await this.userRepository.findOneBy({ email });
 		if (userExist) {
 			this.logger.error('User exists', userExist);
 			throw new BadRequestException('User already exists');
 		}
 
 		const result = await this.passwordEncryption.encrypt(password);
-		const user = await this.repository.save({ email, password: result });
+		const user = await this.userRepository.save({
+			email,
+			password: result,
+			roles: await this.RoleRepository.findBy({ name: 'user' }),
+		});
 		this.logger.log('User create', user);
 		return user;
 	}
 
 	async signIn(email: string, password: string) {
-		const user = await this.repository.findOneBy({ email });
+		const user = await this.userRepository.findOneBy({ email });
 		if (!user) {
 			this.logger.error('User not exists', email);
 			throw new UnauthorizedException('User not exists');
@@ -50,5 +56,37 @@ export class AuthService {
 		this.logger.log('User sign in', user);
 
 		return user;
+	}
+
+	async initializeData() {
+		const roles = await this.RoleRepository.find();
+		if (roles.length === 0) {
+			this.logger.log('No roles found, creating roles');
+			await this.PermitionRepository.save([
+				{ name: 'task-create' },
+				{ name: 'task-read' },
+				{ name: 'task-update' },
+				{ name: 'task-delete' },
+				{ name: 'user-create' },
+				{ name: 'user-read' },
+				{ name: 'user-update' },
+				{ name: 'user-delete' },
+				{ name: '*' },
+			]);
+			await this.RoleRepository.save([
+				{
+					name: 'developer',
+					permissions: await this.PermitionRepository.find(),
+				},
+				{
+					name: 'user',
+					permissions: await this.PermitionRepository.find({
+						where: {
+							name: Like('task-%'),
+						},
+					}),
+				},
+			]);
+		}
 	}
 }

@@ -16,8 +16,18 @@ export class AuthController {
 		const { email, password } = body;
 		const user = await this.authService.signUp(email, password);
 
-		const result = user;
-		delete result.password;
+		const result = {
+			id: user.id,
+			email: user.email,
+			roles: user.roles.map((role) => role.name),
+			permissions: [
+				...new Set(
+					user.roles.flatMap((role) =>
+						role.permissions.map((perm) => perm.name),
+					),
+				),
+			],
+		};
 
 		return result;
 	}
@@ -27,7 +37,19 @@ export class AuthController {
 		const { email, password } = body;
 		const user = await this.authService.signIn(email, password);
 
-		const payload = { email: user.email, sub: user.id, iss: 'login' };
+		const payload = {
+			email: user.email,
+			sub: user.id,
+			roles: user.roles.map((role) => role.name),
+			permissions: [
+				...new Set(
+					user.roles.flatMap((role) =>
+						role.permissions.map((perm) => perm.name),
+					),
+				),
+			],
+			iss: 'login',
+		};
 
 		return { accessToken: this.jwtService.sign(payload) };
 	}

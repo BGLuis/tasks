@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,13 +10,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { AppConfigService } from 'src/app-config/app-config.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { Role } from 'src/user/entities/role.entity';
+import { Permission } from 'src/user/entities/permission.entity';
 
 @Module({
 	imports: [
 		EncryptionModule,
 		AppConfigModule,
 		PassportModule,
-		TypeOrmModule.forFeature([User]),
+		TypeOrmModule.forFeature([User, Role, Permission]),
 		JwtModule.registerAsync({
 			imports: [AppConfigModule],
 			inject: [AppConfigService],
@@ -28,5 +30,12 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 	],
 	controllers: [AuthController],
 	providers: [AuthService, PasswordEncryption, JwtStrategy],
+	exports: [JwtModule, JwtStrategy],
 })
-export class AuthModule {}
+export class AuthModule implements OnModuleInit {
+	constructor(private readonly authService: AuthService) {}
+
+	async onModuleInit() {
+		await this.authService.initializeData();
+	}
+}
