@@ -4,45 +4,76 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TaskHistory } from './entities/task-history.entity';
 
 @Injectable()
 export class TaskService {
 	constructor(
 		@InjectRepository(Task)
-		private readonly repository: Repository<Task>,
+		private readonly TaskRepository: Repository<Task>,
+		@InjectRepository(TaskHistory)
+		private readonly TaskHistoryRepository: Repository<TaskHistory>,
 	) {}
 
-	create(dto: CreateTaskDto) {
-		const task = this.repository.create(dto);
+	create(dto: CreateTaskDto, userId: string) {
+		const task = this.TaskRepository.create({ ...dto, CreateBy: userId });
 		task.done = false;
-		return this.repository.save(task);
+		return this.TaskRepository.save(task);
 	}
 
 	findAll() {
-		return this.repository.find();
+		return this.TaskRepository.find();
 	}
 
 	findOne(id: string) {
-		return this.repository.findOneBy({ id });
+		return this.TaskRepository.findOneBy({ id });
 	}
 
-	async checkd(id: string) {
-		const task = await this.repository.findOneBy({ id });
+	async checkd(id: string, userId: string) {
+		const task = await this.TaskRepository.findOneBy({ id });
 		if (!task) return null;
 		task.done = !task.done;
-		return this.repository.save(task);
+
+		await this.TaskHistoryRepository.save({
+			taskId: task.id,
+			modifiedBy: userId,
+			modifiedField: ['done'],
+		});
+
+		return this.TaskRepository.save(task);
 	}
 
-	async update(id: string, dto: UpdateTaskDto) {
-		const task = await this.repository.findOneBy({ id });
+	async update(id: string, dto: UpdateTaskDto, userId: string) {
+		const task = await this.TaskRepository.findOneBy({ id });
 		if (!task) return null;
-		this.repository.merge(task, dto);
-		return this.repository.save(task);
+
+		const modifiedField: string[] = [];
+		for (const key in dto) {
+			if (task[key] != dto[key]) {
+				modifiedField.push(key);
+			}
+		}
+
+		this.TaskRepository.merge(task, dto);
+		this.TaskHistoryRepository.save({
+			taskId: task.id,
+			modifiedBy: userId,
+			modifiedField: modifiedField,
+		});
+
+		return this.TaskRepository.save(task);
 	}
 
 	async remove(id: string) {
-		const task = await this.repository.findOneBy({ id });
+		const task = await this.TaskRepository.findOneBy({ id });
 		if (!task) return null;
-		return this.repository.remove(task);
+		return this.TaskRepository.remove(task);
+	}
+
+	async getHistory(id: string) {
+		return this.TaskHistoryRepository.find({
+			where: { taskId: id },
+			order: { modifiedAt: 'DESC' },
+		});
 	}
 }

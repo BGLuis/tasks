@@ -1,4 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/user/entities/user.entity';
+import {
+	BeforeUpdate,
+	Column,
+	Entity,
+	ManyToOne,
+	OneToMany,
+	PrimaryGeneratedColumn,
+} from 'typeorm';
+import { TaskHistory } from './task-history.entity';
 
 @Entity('tasks')
 export class Task {
@@ -19,4 +28,18 @@ export class Task {
 
 	@Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
 	updateAt: Date;
+
+	@Column()
+	@ManyToOne(() => User, (user) => user.id)
+	CreateBy: string;
+
+	@OneToMany(() => TaskHistory, (history) => history.taskId, {
+		cascade: true,
+	})
+	history: TaskHistory[];
+
+	@BeforeUpdate()
+	updateDate() {
+		this.updateAt = new Date();
+	}
 }
