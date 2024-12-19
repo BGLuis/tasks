@@ -49,12 +49,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 		const userPermissions: string[] = payload.permissions || [];
 
 		const hasRole = () =>
-			userRoles.some((role) => requiredRoles.includes(role));
+			requiredRoles
+				? requiredRoles.some((role) => userRoles.includes(role))
+				: true;
 
 		const hasPermission = () =>
-			userPermissions.some((permission) =>
-				userPermissions.includes(permission),
-			);
+			requiredPermissions
+				? requiredPermissions.some((permission) =>
+						userPermissions.includes(permission),
+					)
+				: true;
 
 		if (!hasRole() || !hasPermission()) {
 			throw new UnauthorizedException('Insufficient permissions');
