@@ -27,12 +27,12 @@ Instruções de como executar o seu projeto
 
 2. Clone o repositório do projeto:
   ```sh
-  git clone https://github.com/bgluis/pp.git
+  git clone https://github.com/bgluis/tasks.git
   ```
 
 3. Navegue até o diretório do projeto:
   ```sh
-  cd pp
+  cd tasks
   ```
 
 4. Preencha o arquivo `.env` com as variáveis de ambiente necessárias. Utilize o arquivo `.env.example` como referência:
