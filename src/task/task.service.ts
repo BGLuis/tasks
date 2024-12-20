@@ -5,6 +5,7 @@ import { Task } from './entities/task.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskHistory } from './entities/task-history.entity';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class TaskService {
@@ -13,6 +14,7 @@ export class TaskService {
 		private readonly TaskRepository: Repository<Task>,
 		@InjectRepository(TaskHistory)
 		private readonly TaskHistoryRepository: Repository<TaskHistory>,
+		private eventEmitter: EventEmitter2,
 	) {}
 
 	create(dto: CreateTaskDto, userId: string) {
@@ -54,13 +56,13 @@ export class TaskService {
 			}
 		}
 
-		this.TaskRepository.merge(task, dto);
-		this.TaskHistoryRepository.save({
+		this.eventEmitter.emit('task.updated', {
 			taskId: task.id,
 			modifiedBy: userId,
-			modifiedField: modifiedField,
+			modifiedField,
 		});
 
+		this.TaskRepository.merge(task, dto);
 		return this.TaskRepository.save(task);
 	}
 
@@ -74,6 +76,18 @@ export class TaskService {
 		return this.TaskHistoryRepository.find({
 			where: { taskId: id },
 			order: { modifiedAt: 'DESC' },
+		});
+	}
+
+	@OnEvent('task.updated')
+	async onTaskUpdated(event) {
+		const task = await this.TaskRepository.findOneBy({ id: event.taskId });
+		if (!task) return;
+
+		this.TaskHistoryRepository.save({
+			taskId: task.id,
+			modifiedBy: event.modifiedBy,
+			modifiedField: event.modifiedField,
 		});
 	}
 }
