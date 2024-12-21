@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './entities/task.entity';
@@ -47,7 +47,7 @@ export class TaskService {
 
 	async update(id: string, dto: UpdateTaskDto, userId: string) {
 		const task = await this.TaskRepository.findOneBy({ id });
-		if (!task) return null;
+		if (!task) throw new NotFoundException(`Task not found`);
 
 		const modifiedField: string[] = [];
 		for (const key in dto) {
@@ -68,7 +68,7 @@ export class TaskService {
 
 	async remove(id: string) {
 		const task = await this.TaskRepository.findOneBy({ id });
-		if (!task) return null;
+		if (!task) throw new NotFoundException(`Task not found`);
 		return this.TaskRepository.remove(task);
 	}
 
@@ -82,7 +82,7 @@ export class TaskService {
 	@OnEvent('task.updated')
 	async onTaskUpdated(event) {
 		const task = await this.TaskRepository.findOneBy({ id: event.taskId });
-		if (!task) return;
+		if (!task) throw new NotFoundException(`Task not found`);
 
 		this.TaskHistoryRepository.save({
 			taskId: task.id,

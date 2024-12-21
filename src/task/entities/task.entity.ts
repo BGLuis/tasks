@@ -8,6 +8,7 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { TaskHistory } from './task-history.entity';
+import { Group } from 'src/group/entities/group.entity';
 
 @Entity('tasks')
 export class Task {
@@ -32,6 +33,9 @@ export class Task {
 	@Column()
 	@ManyToOne(() => User, (user) => user.id)
 	CreateBy: string;
+
+	@ManyToOne(() => Group, (group) => group.id)
+	group: Group;
 
 	@OneToMany(() => TaskHistory, (history) => history.taskId, {
 		cascade: true,

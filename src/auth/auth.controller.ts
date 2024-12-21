@@ -20,13 +20,6 @@ export class AuthController {
 			id: user.id,
 			email: user.email,
 			roles: user.roles.map((role) => role.name),
-			permissions: [
-				...new Set(
-					user.roles.flatMap((role) =>
-						role.permissions.map((perm) => perm.name),
-					),
-				),
-			],
 		};
 
 		return result;
@@ -41,13 +34,6 @@ export class AuthController {
 			email: user.email,
 			sub: user.id,
 			roles: user.roles.map((role) => role.name),
-			permissions: [
-				...new Set(
-					user.roles.flatMap((role) =>
-						role.permissions.map((perm) => perm.name),
-					),
-				),
-			],
 			iss: 'login',
 		};
 

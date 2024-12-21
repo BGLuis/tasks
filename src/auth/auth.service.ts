@@ -9,7 +9,7 @@ import { Like, Repository } from 'typeorm';
 import { Logger } from 'nestjs-pino';
 import { PasswordEncryption } from 'src/encryption/password-encryption.provider';
 import { Role } from 'src/user/entities/role.entity';
-import { Permission } from 'src/user/entities/permission.entity';
+import { Permission } from 'src/group/entities/permission.entity';
 
 @Injectable()
 export class AuthService {
@@ -64,27 +64,20 @@ export class AuthService {
 			this.logger.log('No roles found, creating roles');
 			await this.PermitionRepository.save([
 				{ name: 'task-create' },
-				{ name: 'task-read' },
 				{ name: 'task-update' },
 				{ name: 'task-delete' },
-				{ name: 'user-create' },
-				{ name: 'user-read' },
 				{ name: 'user-update' },
 				{ name: 'user-delete' },
-				{ name: '*' },
+				{ name: 'user-invite' },
+				{ name: 'group-update' },
+				{ name: 'group-delete' },
 			]);
 			await this.RoleRepository.save([
 				{
 					name: 'developer',
-					permissions: await this.PermitionRepository.find(),
 				},
 				{
 					name: 'user',
-					permissions: await this.PermitionRepository.find({
-						where: {
-							name: Like('task-%'),
-						},
-					}),
 				},
 			]);
 		}

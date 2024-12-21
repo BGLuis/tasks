@@ -10,6 +10,7 @@ import { AppConfigService } from './app-config/app-config.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { EncryptionModule } from './encryption/encryption.module';
+import { GroupModule } from './group/group.module';
 
 @Module({
 	imports: [
@@ -24,6 +25,7 @@ import { EncryptionModule } from './encryption/encryption.module';
 		UserModule,
 		AuthModule,
 		EncryptionModule,
+		GroupModule,
 	],
 	controllers: [AppController],
 	providers: [CustomLogger],

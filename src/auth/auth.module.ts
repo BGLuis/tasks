@@ -11,7 +11,7 @@ import { AppConfigService } from 'src/app-config/app-config.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { Role } from 'src/user/entities/role.entity';
-import { Permission } from 'src/user/entities/permission.entity';
+import { Permission } from 'src/group/entities/permission.entity';
 
 @Module({
 	imports: [
