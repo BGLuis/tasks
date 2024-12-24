@@ -15,7 +15,18 @@ import { GroupModule } from './group/group.module';
 @Module({
 	imports: [
 		AppConfigModule,
-		LoggerModule.forRoot({ pinoHttp: { level: 'trace' } }),
+		LoggerModule.forRoot({
+			pinoHttp: {
+				level: 'trace',
+				transport: {
+					target: 'pino-pretty',
+					options: {
+						colorize: true,
+						colorizeObjects: true,
+					},
+				},
+			},
+		}),
 		TypeOrmModule.forRootAsync({
 			imports: [AppConfigModule],
 			inject: [AppConfigService],
