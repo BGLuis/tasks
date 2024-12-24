@@ -30,13 +30,13 @@ export class AppConfigService {
 			`using database password: ${this.config.get<string>('DB_PASS')}`,
 		);
 		this.logger.debug(
-			`password encryption size:  ${this.config.get<string>('API_PASSWORD_KEY_LENGTH')}`,
+			`password encryption size: ${this.config.get<string>('API_PASSWORD_KEY_LENGTH')}`,
 		);
 		this.logger.debug(
-			`salt size:  ${this.config.get<string>('API_PASSWORD_SALT_LENGTH')}`,
+			`salt size: ${this.config.get<string>('API_PASSWORD_SALT_LENGTH')}`,
 		);
 		this.logger.debug(
-			`jwt secret:  ${this.config.get<string>('API_JWT_SECRET')}`,
+			`jwt secret: ${this.config.get<string>('API_JWT_SECRET')}`,
 		);
 	}
 
