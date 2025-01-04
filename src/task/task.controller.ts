@@ -16,39 +16,44 @@ import { Permissions } from 'src/auth/decorator/permission.decorator';
 import { CurrentUser } from 'src/auth/decorator/current-user.decorator';
 import { CurrentUserDto } from 'src/auth/dto/current-user.dto';
 
-@Controller('task')
+@Controller('group/:idGroup/task')
 @UseGuards(JwtAuthGuard)
 export class TaskController {
 	constructor(private readonly taskService: TaskService) {}
 
-	@Permissions('task-create')
+	// TODO: fix permission
+	// const paramValue = request.params['paramName'];
+	// baseado no grupo e no usuário
+
+	// @Permissions('task-create')
 	@Post()
 	create(
+		@Param('idGroup') idGroup: string,
 		@CurrentUser() user: CurrentUserDto,
 		@Body() createTaskDto: CreateTaskDto,
 	) {
 		return this.taskService.create(createTaskDto, user.userId);
 	}
 
-	@Permissions('task-read')
+	// @Permissions('task-read')
 	@Get()
 	findAll() {
 		return this.taskService.findAll();
 	}
 
-	@Permissions('task-read')
+	// @Permissions('task-read')
 	@Get(':id')
 	findOne(@Param('id') id: string) {
 		return this.taskService.findOne(id);
 	}
 
-	@Permissions('task-update')
+	// @Permissions('task-update')
 	@Patch(':id/checkd')
 	check(@CurrentUser() user: CurrentUserDto, @Param('id') id: string) {
 		return this.taskService.checkd(id, user.userId);
 	}
 
-	@Permissions('task-update')
+	// @Permissions('task-update')
 	@Patch(':id')
 	update(
 		@CurrentUser() user: CurrentUserDto,
@@ -58,13 +63,13 @@ export class TaskController {
 		return this.taskService.update(id, updateTaskDto, user.userId);
 	}
 
-	@Permissions('task-delete')
+	// @Permissions('task-delete')
 	@Delete(':id')
 	remove(@Param('id') id: string) {
 		return this.taskService.remove(id);
 	}
 
-	@Permissions('task-read')
+	// @Permissions('task-read')
 	@Get(':id/history')
 	history(@Param('id') id: string) {
 		return this.taskService.getHistory(id);
