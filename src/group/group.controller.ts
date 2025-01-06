@@ -72,4 +72,10 @@ export class GroupController {
 	remove(@Param('id') id: string) {
 		return this.groupService.remove(id);
 	}
+
+	@Permissions('user-delete')
+	@Delete(':id/users/:userId')
+	removeUser(@Param('id') id: string, @Param('userId') userId: string) {
+		return this.groupService.removeUser(id, userId);
+	}
 }

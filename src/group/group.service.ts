@@ -141,4 +141,16 @@ export class GroupService {
 		});
 		return this.userGroupRepository.save(userGroup);
 	}
+
+	async removeUser(groupId: string, userId: string) {
+		const userGroup = await this.userGroupRepository.findOne({
+			where: {
+				groupId,
+				userId,
+			},
+		});
+		if (!userGroup) throw new NotFoundException(`User not found`);
+
+		return this.userGroupRepository.remove(userGroup);
+	}
 }
