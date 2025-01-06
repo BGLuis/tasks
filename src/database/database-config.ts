@@ -13,6 +13,5 @@ export const config = (
 		database: configService.DbName,
 		entities: [__dirname + '/../**/*.entity{.ts,.js}'],
 		synchronize: true,
-		// logging: true,
 	};
 };

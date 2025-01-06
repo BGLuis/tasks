@@ -17,14 +17,18 @@ export class TaskService {
 		private eventEmitter: EventEmitter2,
 	) {}
 
-	create(dto: CreateTaskDto, userId: string) {
-		const task = this.TaskRepository.create({ ...dto, CreateBy: userId });
+	create(dto: CreateTaskDto, userId: string, groupId: string) {
+		const task = this.TaskRepository.create({
+			...dto,
+			CreateBy: userId,
+			group: { id: groupId },
+		});
 		task.done = false;
 		return this.TaskRepository.save(task);
 	}
 
-	findAll() {
-		return this.TaskRepository.find();
+	findAll(groupId: string) {
+		return this.TaskRepository.findBy({ group: { id: groupId } });
 	}
 
 	findOne(id: string) {
@@ -32,7 +36,9 @@ export class TaskService {
 	}
 
 	async checkd(id: string, userId: string) {
-		const task = await this.TaskRepository.findOneBy({ id });
+		const task = await this.TaskRepository.findOneBy({
+			id,
+		});
 		if (!task) return null;
 		task.done = !task.done;
 

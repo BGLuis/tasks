@@ -12,6 +12,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { Role } from 'src/user/entities/role.entity';
 import { Permission } from 'src/group/entities/permission.entity';
+import { JwtAuthGuard } from './guard/jwt-auth.guard';
 
 @Module({
 	imports: [
@@ -29,8 +30,8 @@ import { Permission } from 'src/group/entities/permission.entity';
 		}),
 	],
 	controllers: [AuthController],
-	providers: [AuthService, PasswordEncryption, JwtStrategy],
-	exports: [JwtModule, JwtStrategy],
+	providers: [AuthService, PasswordEncryption, JwtStrategy, JwtAuthGuard],
+	exports: [JwtModule, JwtStrategy, JwtAuthGuard],
 })
 export class AuthModule implements OnModuleInit {
 	constructor(private readonly authService: AuthService) {}

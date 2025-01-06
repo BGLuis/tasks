@@ -1,13 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from 'nestjs-pino';
 
 @Injectable()
 export class AppConfigService {
-	constructor(
-		private readonly config: ConfigService,
-		private readonly logger: Logger,
-	) {
+	private readonly logger = new Logger(AppConfigService.name);
+	constructor(private readonly config: ConfigService) {
 		this.logger.debug(
 			`application log level: ${this.config.get<string>('API_LOG_LEVEL')}`,
 		);
@@ -41,7 +38,7 @@ export class AppConfigService {
 	}
 
 	get LogLevel(): string {
-		return this.config.get<string>('LOG_LEVEL');
+		return this.config.get<string>('API_LOG_LEVEL');
 	}
 
 	get DbType(): string {

@@ -11,32 +11,31 @@ import {
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { Permissions } from 'src/auth/decorator/permission.decorator';
 import { CurrentUser } from 'src/auth/decorator/current-user.decorator';
 import { CurrentUserDto } from 'src/auth/dto/current-user.dto';
+import { GroupMembershipGuard } from 'src/group/guard/group-membership.guard';
+import { Permissions } from 'src/group/decorator/permission.decorator';
 
-@Controller('task')
-@UseGuards(JwtAuthGuard)
+@Controller('group/:idGroup/task')
+@UseGuards(GroupMembershipGuard)
 export class TaskController {
 	constructor(private readonly taskService: TaskService) {}
 
 	@Permissions('task-create')
 	@Post()
 	create(
+		@Param('idGroup') idGroup: string,
 		@CurrentUser() user: CurrentUserDto,
 		@Body() createTaskDto: CreateTaskDto,
 	) {
-		return this.taskService.create(createTaskDto, user.userId);
+		return this.taskService.create(createTaskDto, user.userId, idGroup);
 	}
 
-	@Permissions('task-read')
 	@Get()
-	findAll() {
-		return this.taskService.findAll();
+	findAll(@Param('idGroup') idGroup: string) {
+		return this.taskService.findAll(idGroup);
 	}
 
-	@Permissions('task-read')
 	@Get(':id')
 	findOne(@Param('id') id: string) {
 		return this.taskService.findOne(id);
@@ -64,7 +63,6 @@ export class TaskController {
 		return this.taskService.remove(id);
 	}
 
-	@Permissions('task-read')
 	@Get(':id/history')
 	history(@Param('id') id: string) {
 		return this.taskService.getHistory(id);

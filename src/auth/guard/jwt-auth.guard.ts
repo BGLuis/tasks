@@ -1,16 +1,17 @@
 import {
 	ExecutionContext,
 	Injectable,
+	Logger,
 	UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { ROLES_KEY } from '../decorator/roles.decorator';
-import { PERMISSIONS_KEY } from '../decorator/permission.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
+	private readonly logger = new Logger(JwtAuthGuard.name);
 	constructor(
 		private readonly reflector: Reflector,
 		private readonly jwtService: JwtService,
@@ -21,6 +22,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 	async canActivate(context: ExecutionContext) {
 		const canActivate = await super.canActivate(context);
 		if (!canActivate) {
+			this.logger.error('User is not authenticated');
 			return false;
 		}
 
@@ -28,11 +30,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 			ROLES_KEY,
 			[context.getHandler(), context.getClass()],
 		);
-		const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
-			PERMISSIONS_KEY,
-			[context.getHandler(), context.getClass()],
-		);
-		if (!requiredRoles && !requiredPermissions) {
+
+		if (!requiredRoles) {
 			return true;
 		}
 

@@ -12,10 +12,11 @@ import { UserGroup } from './entities/user-group.entity';
 @Module({
 	imports: [
 		TypeOrmModule.forFeature([Group, Permission, User, UserGroup]),
-		AuthModule,
 		EventEmitterModule.forRoot(),
+		AuthModule,
 	],
 	controllers: [GroupController],
 	providers: [GroupService],
+	exports: [GroupService],
 })
 export class GroupModule {}

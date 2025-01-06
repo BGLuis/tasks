@@ -1,18 +1,19 @@
 import {
 	BadRequestException,
 	Injectable,
+	Logger,
 	UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
-import { Like, Repository } from 'typeorm';
-import { Logger } from 'nestjs-pino';
+import { Repository } from 'typeorm';
 import { PasswordEncryption } from 'src/encryption/password-encryption.provider';
 import { Role } from 'src/user/entities/role.entity';
 import { Permission } from 'src/group/entities/permission.entity';
 
 @Injectable()
 export class AuthService {
+	private readonly logger = new Logger(AuthService.name);
 	constructor(
 		@InjectRepository(User)
 		private readonly userRepository: Repository<User>,
@@ -21,7 +22,6 @@ export class AuthService {
 		@InjectRepository(Permission)
 		private readonly PermitionRepository: Repository<Permission>,
 		private readonly passwordEncryption: PasswordEncryption,
-		private readonly logger: Logger,
 	) {}
 
 	async signUp(email: string, password: string) {
