@@ -15,12 +15,14 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorator/current-user.decorator';
 import { CurrentUserDto } from 'src/auth/dto/current-user.dto';
 import { addUserGroupDto } from './dto/add-user-group.dto';
+import { Permissions } from './decorator/permission.decorator';
 
+// TODO: Remove user form group
 @Controller('group')
 @UseGuards(JwtAuthGuard)
 export class GroupController {
 	constructor(private readonly groupService: GroupService) {}
-	// TODO: Implement Guard for valid user permissions
+
 	@Post()
 	async create(
 		@CurrentUser() user: CurrentUserDto,
@@ -55,6 +57,7 @@ export class GroupController {
 		return this.groupService.findUsers(id);
 	}
 
+	@Permissions('group-update')
 	@Patch(':id')
 	update(
 		@CurrentUser() user: CurrentUserDto,
@@ -64,6 +67,7 @@ export class GroupController {
 		return this.groupService.update(id, updateGroupDto, user.userId);
 	}
 
+	@Permissions('group-delete')
 	@Delete(':id')
 	remove(@Param('id') id: string) {
 		return this.groupService.remove(id);
