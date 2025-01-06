@@ -41,7 +41,7 @@ export class AppConfigService {
 	}
 
 	get LogLevel(): string {
-		return this.config.get<string>('LOG_LEVEL');
+		return this.config.get<string>('API_LOG_LEVEL');
 	}
 
 	get DbType(): string {
