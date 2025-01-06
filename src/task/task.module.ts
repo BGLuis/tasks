@@ -6,12 +6,14 @@ import { Task } from './entities/task.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { TaskHistory } from './entities/task-history.entity';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { GroupModule } from 'src/group/group.module';
 
 @Module({
 	imports: [
 		TypeOrmModule.forFeature([Task, TaskHistory]),
-		AuthModule,
 		EventEmitterModule.forRoot(),
+		AuthModule,
+		GroupModule,
 	],
 	controllers: [TaskController],
 	providers: [TaskService],

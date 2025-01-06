@@ -7,8 +7,7 @@ export class TaskHistory {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column()
-	@ManyToOne(() => Task, (task) => task.id)
+	@ManyToOne(() => Task, (task) => task.id, { onDelete: 'CASCADE' })
 	taskId: string;
 
 	@Column()
